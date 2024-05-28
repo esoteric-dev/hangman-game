@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        #game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        #word-display {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+        #word-display .letter {
+            display: inline-block;
+            margin: 5px;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #guessed-letters {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #guess-input {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #hangman-image {
+            width: 200px;
+            height: 200px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Hangman Game</h1>
+        <div id="word-display"></div>
+        <div id="guessed-letters">Guessed Letters: <span id="guessed-letters-list"></span></div>
+        <input type="text" id="guess-input" placeholder="Guess a letter">
+        <button onclick="guessLetter()">Submit Guess</button>
+        <img src="hangman.png" id="hangman-image" alt="Hangman">
+    </div>
+
+    <script>
+        const words = ["apple", "banana", "cherry", "date", "elderberry"];
+        let chosenWord = words[Math.floor(Math.random() * words.length)];
+        let guessedLetters = [];
+        let wrongGuesses = 0;
+        let guessedWord = [];
+
+        function initializeGame() {
+            guessedWord = Array.from({ length: chosenWord.length }, () => "_ ");
+            document.getElementById("word-display").innerHTML = guessedWord.join("");
+            document.getElementById("guessed-letters-list").textContent = guessedLetters.join(", ");
+            document.getElementById("guess-input").value = "";
+            wrongGuesses = 0;
+            document.getElementById("hangman-image").src = "hangman" + wrongGuesses + ".png";
+        }
+
+        function guessLetter() {
+            const guess = document.getElementById("guess-input").value.toLowerCase();
+            if (guess.length !== 1 || !/^[a-z]$/.test(guess) || guessedLetters.includes(guess)) {
+                alert("Invalid guess. Please enter a single letter.");
+                return;
+            }
+
+            guessedLetters.push(guess);
+            document.getElementById("guessed-letters-list").textContent = guessedLetters.join(", ");
+
+            let found = false;
+            for (let i = 0; i < chosenWord.length; i++) {
+                if (chosenWord[i] === guess) {
+                    guessedWord[i] = guess;
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                wrongGuesses++;
+                if (wrongGuesses === 6) {
+                    alert("You lost! The word was " + chosenWord);
+                    initializeGame();
+                } else {
+                    document.getElementById("hangman-image").src = "hangman" + wrongGuesses + ".png";
+                }
+            }
+
+            document.getElementById("word-display").innerHTML = guessedWord.join("");
+
+            if (guessedWord.join("").replace(/ /g, "") === chosenWord) {
+                alert("Congratulations! You guessed the word: " + chosenWord);
+                initializeGame();
+            }
+        }
+
+        initializeGame();
+    </script>
+</body>
+</html>
